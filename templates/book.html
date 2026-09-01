@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book {{ item.service_name }} - CareCompare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; }
+        
+        .navbar { background: #ffffff; padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .brand { font-size: 20px; font-weight: 800; color: #0284c7; text-decoration: none; }
+
+        .checkout-grid { max-width: 950px; margin: 35px auto; padding: 0 20px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 30px; }
+        .card { background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        
+        .section-title { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        .input-box { width: 100%; padding: 11px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
+        
+        /* Payment Options */
+        .payment-option { border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.2s; }
+        .payment-option:hover { border-color: #0284c7; background: #f0f9ff; }
+        .payment-option input[type="radio"] { accent-color: #0284c7; width: 18px; height: 18px; }
+
+        .order-summary { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin-bottom: 20px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #475569; }
+        .summary-row.total { border-top: 2px dashed #cbd5e1; padding-top: 12px; font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 12px; }
+
+        .btn-pay { width: 100%; background: #10b981; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; }
+        .btn-pay:hover { background: #059669; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="/" class="brand">🏥 CareCompare</a>
+        <a href="/" style="color: #64748b; text-decoration: none; font-size: 14px; font-weight: 600;">← Cancel & Return</a>
+    </header>
+
+    <div class="checkout-grid">
+        <!-- LEFT: Patient & Payment Form -->
+        <div>
+            <div class="card">
+                <h3 class="section-title"><i class="fa-solid fa-user-pen" style="color:#0284c7;"></i> Patient & Appointment Details</h3>
+                
+                <form action="/process-booking" method="POST" id="bookingForm">
+                    <input type="hidden" name="hospital_name" value="{{ item.hospital_name }}">
+                    <input type="hidden" name="service_name" value="{{ item.service_name }}">
+                    <input type="hidden" name="price_inr" value="{{ item.price_inr }}">
+
+                    <div class="form-group">
+                        <label>Patient Full Name</label>
+                        <input type="text" name="patient_name" value="{{ session.get('user_name', '') }}" class="input-box" placeholder="Enter patient name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="patient_phone" class="input-box" placeholder="e.g. 9876543210" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Preferred Date for Test / Checkup</label>
+                        <input type="date" name="appointment_date" class="input-box" required>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 25px;"><i class="fa-solid fa-credit-card" style="color:#10b981;"></i> Select Payment Method</h3>
+                    
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="UPI / QR Code" checked>
+                        <div>
+                            <strong><i class="fa-brands fa-google-pay"></i> UPI / QR Code (GPay, PhonePe, Paytm)</strong>
+                            <p style="font-size: 12px; color: #64748b;">Instant online confirmation & zero extra charges</p>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="Debit / Credit Card">
+                        <div>
+                            <strong><i class="fa-solid fa-credit-card"></i> Debit / Credit Card / Netbanking</strong>
+                            <p style="font-size: 12px; color: #64748b;">Visa, Mastercard, RuPay & All Indian Banks</p>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="Pay at Hospital">
+                        <div>
+                            <strong><i class="fa-solid fa-money-bill-wave"></i> Pay at Hospital Counter (Cash / UPI)</strong>
+                            <p style="font-size: 12px; color: #64748b;">Pay directly during your appointment visit</p>
+                        </div>
+                    </label>
+
+                    <button type="submit" class="btn-pay"><i class="fa-solid fa-lock"></i> Confirm & Book Appointment</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- RIGHT: Order Summary Card -->
+        <div>
+            <div class="card">
+                <h3 class="section-title"><i class="fa-solid fa-receipt" style="color:#0284c7;"></i> Booking Summary</h3>
+                
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Hospital:</span>
+                        <strong>{{ item.hospital_name }}</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Location:</span>
+                        <span>{{ item.area }}, {{ item.city }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Test / Service:</span>
+                        <strong>{{ item.service_name }}</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Standard Rate:</span>
+                        <span>₹{{ item.price_inr }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Platform Booking Fee:</span>
+                        <span style="color:#16a34a; font-weight:600;">FREE (₹0)</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Payable:</span>
+                        <span style="color:#0284c7;">₹{{ item.price_inr }}</span>
+                    </div>
+                </div>
+
+                <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+                    <i class="fa-solid fa-shield-check" style="color:#10b981;"></i> 100% Price Guarantee: No extra hospital charges at counter. Instant SMS & WhatsApp confirmation receipt.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

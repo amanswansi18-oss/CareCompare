@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareCompare - Find & Compare Hospitals</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .page-container { max-width: 1280px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: 320px 1fr; gap: 25px; }
+        
+        /* Left Sidebar Cards */
+        .sidebar-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .sidebar-card h3 { font-size: 16px; color: #0f172a; margin-bottom: 12px; }
+        .feature-item { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
+        .feature-icon { font-size: 20px; flex-shrink: 0; }
+        .feature-text strong { display: block; color: #0f172a; margin-bottom: 2px; }
+        .feature-text p { color: #64748b; line-height: 1.4; margin: 0; }
+        
+        .trust-banner { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px; margin: 30px auto; max-width: 1240px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .trust-item strong { display: block; color: #166534; margin-bottom: 4px; font-size: 14px; }
+        .trust-item p { color: #15803d; font-size: 13px; margin: 0; }
+
+        /* Book Now Button Styling */
+        .btn-book-now {
+            background: #10b981;
+            color: white !important;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        .btn-book-now:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="navbar">
+        <h2 style="font-weight:800;"><a href="/" style="color:white; text-decoration:none;">🏥 CareCompare</a></h2>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/nearby">Hospitals</a>
+            {% if session.get('user_name') %}
+                <a href="/my-bookings" style="color: white; font-weight: 600; margin-left: 10px;"><i class="fa-solid fa-receipt"></i> My Bookings</a>
+                <span style="color:white; font-weight:600; margin-left:15px;">👤 {{ session.get('user_name') }}</span>
+                <a href="/logout" style="color:#fecaca; margin-left:10px;">Logout</a>
+            {% else %}
+                <a href="/login" class="login-btn">Login</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Top Alert Banner -->
+    <div class="info-banner">
+        ℹ️ Prices hospital dwara update kiye jate hain aur regular verify kiye jate hain. Isliye yahan dikhne wale prices approx hote hain.
+    </div>
+
+    <!-- Search Controls -->
+    <form action="/search" method="GET" class="search-wrapper">
+        <div class="input-group">
+            <input type="text" name="service" value="{{ query }}" placeholder="Search Service (e.g. X-Ray)" required>
+        </div>
+        <div class="input-group">
+            <input type="text" name="location" value="{{ location }}" placeholder="Enter City / Area (e.g. Bistupur)">
+        </div>
+        <button type="submit" class="search-btn">Search</button>
+    </form>
+
+    <div class="page-container">
+        <!-- LEFT SIDEBAR -->
+        <aside>
+            <div class="sidebar-card" style="border-left: 4px solid #0284c7;">
+                <h3>Price Ka Source</h3>
+                <div class="feature-item">
+                    <span class="feature-icon">🏥</span>
+                    <div class="feature-text">
+                        <strong>1. Hospital Direct Update</strong>
+                        <p>Hospitals apne dashboard me login karke har service ka price update karte hain.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📋</span>
+                    <div class="feature-text">
+                        <strong>2. Official Rate List</strong>
+                        <p>Verified rate lists se data verify kiya jata hai.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📞</span>
+                    <div class="feature-text">
+                        <strong>3. Phone / Email Confirmation</strong>
+                        <p>Dedicated team call karke prices confirm karti hai.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-card" style="border-left: 4px solid #10b981;">
+                <h3>Price Update Process</h3>
+                <div class="feature-item">
+                    <span class="feature-icon">🗄️</span>
+                    <div class="feature-text">
+                        <strong>1. Data Collect</strong>
+                        <p>Hospitals se price data capture hota hai.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✅</span>
+                    <div class="feature-text">
+                        <strong>2. Regular Verification</strong>
+                        <p>Every 7-15 days rates review hote hain.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER RESULTS -->
+        <main>
+            <h3 style="margin-bottom: 20px; font-size: 16px; color: #475569;">
+                {{ results|length }} Hospitals Found for "{{ query }}" {% if location %}in "{{ location }}"{% endif %}
+            </h3>
+
+            {% for row in results %}
+            <div class="hospital-list-card">
+                <!-- Dynamic Hospital Image -->
+                <img src="{{ row.image_url or 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=400&q=80' }}" alt="{{ row.hospital_name }}" class="card-image">
+                
+                <div class="card-content">
+                    <div>
+                        <div class="card-header-row">
+                            <h2 class="card-title">{{ row.hospital_name }}</h2>
+                            <span class="rating-badge">★ {{ row.rating }}</span>
+                        </div>
+                        <div class="card-meta">
+                            📍 {{ row.area }}, {{ row.city }}
+                        </div>
+                    </div>
+
+                    <div class="service-pills">
+                        <span class="pill pill-yes">X-Ray ✓</span>
+                        <span class="pill pill-yes">Blood Test ✓</span>
+                        <span class="pill pill-yes">CT Scan ✓</span>
+                        <span class="pill pill-yes">MRI ✓</span>
+                    </div>
+
+                    <div class="card-meta" style="font-weight: 500;">
+                        Open 24x7 • {{ row.doctors_count }} Doctors
+                    </div>
+                </div>
+
+                <!-- RIGHT PRICE BOX WITH BOOK NOW -->
+                <div class="card-price-box">
+                    <span class="service-price-label">{{ row.service_name }} Price</span>
+                    <span class="service-price-val">₹{{ row.price_inr }}</span>
+                    <span class="price-approx">(Approx)</span>
+                    
+                    <!-- BOOK NOW BUTTON -->
+                    <a href="/book/{{ row.service_id }}" class="btn-book-now">
+                        <i class="fa-solid fa-bolt"></i> Book Now
+                    </a>
+                    
+                    <a href="/hospital/{{ row.hospital_id }}" class="view-details-btn">View Details →</a>
+                </div>
+            </div>
+            {% else %}
+            <div style="background:white; padding:40px; text-align:center; border-radius:8px; border:1px solid #e2e8f0;">
+                <p style="color:#64748b;">Aapke search query ke anusaar koi hospital nahi mila.</p>
+            </div>
+            {% endfor %}
+        </main>
+    </div>
+
+    <!-- BOTTOM TRUST SECTION -->
+    <div class="trust-banner">
+        <div class="trust-item">
+            <strong>🛡️ Regular Verification</strong>
+            <p>Har hospital ke prices regular verify kiye jaate hain.</p>
+        </div>
+        <div class="trust-item">
+            <strong>🔔 Hospital Updates</strong>
+            <p>Hospitals khud dashboard se price updates bhejte hain.</p>
+        </div>
+        <div class="trust-item">
+            <strong>👥 User Feedback</strong>
+            <p>Galat price report hone par turant review aur update hota hai.</p>
+        </div>
+    </div>
+
+</body>
+</html>

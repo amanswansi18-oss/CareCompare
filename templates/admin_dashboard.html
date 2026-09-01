@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ hospital.hospital_name }} - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header class="navbar" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>🏥 CareCompare Admin</h2>
+        <a href="/" style="color: white; text-decoration: none;">Logout</a>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>{{ hospital.hospital_name }} — Service Management</h2>
+            <p>📍 {{ hospital.area }}, {{ hospital.city }} | 📞 {{ hospital.phone }}</p>
+        </div>
+
+        {% if success %}
+            <p style="color: #166534; background: #dcfce7; padding: 10px; border-radius: 6px; margin-top: 15px;">{{ success }}</p>
+        {% endif %}
+
+        <h3 style="margin-top: 25px;">Update Service Rates & Availability</h3>
+        
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Service Name</th>
+                    <th>Current Price (₹)</th>
+                    <th>Available</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in services %}
+                <tr>
+                    <form action="/update-price" method="POST">
+                        <input type="hidden" name="service_id" value="{{ s.service_id }}">
+                        <input type="hidden" name="hospital_id" value="{{ hospital.hospital_id }}">
+                        <td><strong>{{ s.service_name }}</strong></td>
+                        <td>
+                            ₹ <input type="number" name="price" value="{{ s.price_inr }}" style="width: 90px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                        </td>
+                        <td>
+                            <input type="checkbox" name="available" {% if s.available == 1 %}checked{% endif %}> Available
+                        </td>
+                        <td>
+                            <button type="submit" class="btn" style="background: #16a34a; padding: 6px 12px; font-size: 13px;">Save</button>
+                        </td>
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - CareCompare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; }
+        .navbar { background: #ffffff; padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .brand { font-size: 20px; font-weight: 800; color: #0284c7; text-decoration: none; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .booking-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; margin-bottom: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .badge-status { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .status-paid { background: #dcfce7; color: #15803d; }
+        .status-pending { background: #fef3c7; color: #b45309; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="/" class="brand">🏥 CareCompare</a>
+        <div>
+            <a href="/" style="text-decoration: none; color: #64748b; font-weight: 600; margin-right: 20px;">Home</a>
+            <a href="/logout" style="text-decoration: none; color: #ef4444; font-weight: 600;">Logout</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">My Appointments & Tests</h2>
+        <p style="color: #64748b; margin-bottom: 25px; font-size: 14px;">Track your scheduled lab visits, tests, and payment status</p>
+
+        {% for b in bookings %}
+        <div class="booking-card">
+            <div>
+                <span style="font-size: 12px; color: #64748b; font-weight: 600;">Booking ID: #CC-{{ b.booking_id }} • {{ b.created_at }}</span>
+                <h3 style="color: #0f172a; font-size: 18px; margin: 4px 0;">{{ b.service_name }}</h3>
+                <p style="color: #0284c7; font-weight: 600; font-size: 14px;"><i class="fa-solid fa-hospital"></i> {{ b.hospital_name }}</p>
+                <p style="color: #64748b; font-size: 13px; margin-top: 4px;"><i class="fa-solid fa-calendar-day"></i> Appointment Date: <strong>{{ b.appointment_date }}</strong></p>
+            </div>
+
+            <div style="text-align: right;">
+                <div style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">₹{{ b.price_inr }}</div>
+                <span class="badge-status {% if 'Paid' in b.payment_status %}status-paid{% else %}status-pending{% endif %}">
+                    {{ b.payment_status }}
+                </span>
+                <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Mode: {{ b.payment_method }}</div>
+            </div>
+        </div>
+        {% else %}
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 40px; text-align: center; color: #64748b;">
+            <i class="fa-regular fa-calendar-xmark" style="font-size: 40px; color: #cbd5e1; margin-bottom: 12px;"></i>
+            <p>Aapne abhi tak koi test book nahi kiya hai.</p>
+            <a href="/" style="color: #0284c7; font-weight: 700; text-decoration: none; margin-top: 8px; display: inline-block;">Search Tests Now →</a>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed - CareCompare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
+        .receipt-card { background: white; max-width: 550px; margin: 40px auto; padding: 35px 30px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        .success-icon { width: 70px; height: 70px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 15px; }
+        .receipt-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; margin: 25px 0; text-align: left; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .btn-home { background: #0284c7; color: white; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 700; font-size: 14px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <div class="receipt-card">
+        <div class="success-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <h2 style="color: #0f172a; font-size: 24px; margin-bottom: 6px;">Appointment Confirmed!</h2>
+        <p style="color: #64748b; font-size: 14px;">Aapka test booking slot successfully confirm ho gaya hai.</p>
+
+        <div class="receipt-box">
+            <div class="receipt-row">
+                <span style="color:#64748b;">Booking ID:</span>
+                <strong>#CC-{{ booking_id }}</strong>
+            </div>
+            <div class="receipt-row">
+                <span style="color:#64748b;">Transaction ID:</span>
+                <code>{{ transaction_id }}</code>
+            </div>
+            <div class="receipt-row">
+                <span style="color:#64748b;">Patient Name:</span>
+                <strong>{{ patient_name }}</strong>
+            </div>
+            <div class="receipt-row">
+                <span style="color:#64748b;">Hospital:</span>
+                <strong>{{ hospital_name }}</strong>
+            </div>
+            <div class="receipt-row">
+                <span style="color:#64748b;">Test / Service:</span>
+                <span>{{ service_name }}</span>
+            </div>
+            <div class="receipt-row">
+                <span style="color:#64748b;">Date:</span>
+                <span>{{ appointment_date }}</span>
+            </div>
+            <div class="receipt-row">
+                <span style="color:#64748b;">Payment Mode:</span>
+                <span>{{ payment_method }}</span>
+            </div>
+            <div class="receipt-row" style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-top: 10px;">
+                <span style="color:#64748b;">Status:</span>
+                <span style="color:#16a34a; font-weight:700;">{{ payment_status }}</span>
+            </div>
+            <div class="receipt-row">
+                <span style="color:#0f172a; font-weight:700;">Total Amount:</span>
+                <strong style="color:#0284c7; font-size:18px;">₹{{ price_inr }}</strong>
+            </div>
+        </div>
+
+        <a href="/" class="btn-home">← Back to Home</a>
+    </div>
+
+</body>
+</html>

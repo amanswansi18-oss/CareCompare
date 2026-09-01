@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareCompare - Find, Compare & Book Healthcare Services</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --accent: #10b981;
+            --dark: #0f172a;
+            --light-bg: #f8fafc;
+            --card-border: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #334155;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Top Help Strip */
+        .top-help-bar {
+            background: #0f172a;
+            color: #94a3b8;
+            font-size: 12px;
+            padding: 7px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-help-bar a { color: #38bdf8; text-decoration: none; }
+
+        /* Main Navbar */
+        .main-navbar {
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 22px;
+            font-weight: 800;
+        }
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--primary); }
+        .nav-btn-login {
+            background: var(--primary);
+            color: #ffffff !important;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+             /* ==================== ULTRA-CLEAR MODERN MRI/CT MACHINE HERO ==================== */
+        .hero-section {
+            position: relative;
+            /* Ultra-light transparent overlay taaki machine crystal-clear dikhe */
+            background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.30) 0%, rgba(15, 23, 42, 0.45) 100%), 
+                              url('https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1800&auto=format&fit=crop&q=90');
+            background-size: cover;
+            background-position: center 30%;
+            background-repeat: no-repeat;
+            padding: 95px 20px 105px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .hero-title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            /* Text readable rahe bright image ke upar */
+            text-shadow: 0 3px 15px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 35px;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Solid White Floating Dual Search Box */
+        .dual-search-bar {
+            max-width: 880px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border: 1px solid #e2e8f0;
+        }
+
+        .popular-tags {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag-pill {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 8px 18px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 13.5px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .tag-pill:hover {
+            background: #0284c7;
+            color: #ffffff;
+            transform: translateY(-2px);
+            border-color: #0284c7;
+        }
+        
+
+        /* Glassmorphism Dual Search Box */
+        .dual-search-bar {
+            max-width: 860px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 10px;
+            border-radius: 14px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.25);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .search-field {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            min-width: 210px;
+            border: 1px solid #cbd5e1;
+        }
+        .search-field input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        .btn-search-main {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .btn-search-main:hover { background: var(--primary-dark); }
+        .btn-location-detect {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+            padding: 0 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .popular-tags {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tag-pill {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 7px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .tag-pill:hover { background: #ffffff; color: var(--primary); }
+
+        /* SECTION LAYOUT */
+        .section-container {
+            max-width: 1180px;
+            margin: 55px auto;
+            padding: 0 20px;
+        }
+        .section-heading { margin-bottom: 25px; }
+        .section-heading h2 { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+        .section-heading p { font-size: 14px; color: #64748b; margin: 0; }
+
+        /* SECTION 1: VIDEO EXPLAINER */
+        .video-explainer-card {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+        }
+        .video-thumbnail-wrap {
+            position: relative;
+            background: #0f172a;
+            min-height: 280px;
+            cursor: pointer;
+        }
+        .video-thumbnail-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+        .play-btn-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65px;
+            height: 65px;
+            background: rgba(2, 132, 199, 0.95);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 20px rgba(2, 132, 199, 0.6);
+        }
+        .video-info-content { padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        .video-info-content h3 { font-size: 20px; color: var(--dark); margin-bottom: 12px; }
+        .info-step-list { list-style: none; padding: 0; margin: 15px 0 0; }
+        .info-step-item { display: flex; gap: 12px; margin-bottom: 12px; font-size: 13.5px; line-height: 1.4; }
+        .info-step-item i { color: var(--accent); margin-top: 3px; }
+
+        /* ==================== SECTION 2: MEDICAL CLINICAL CHECKUP CARDS ==================== */
+        .hospital-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 22px;
+        }
+        .hospital-card-pro {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .hospital-card-pro:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        }
+        .card-img-wrap { position: relative; height: 175px; overflow: hidden; }
+        .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .hospital-card-pro:hover .card-img-wrap img { transform: scale(1.05); }
+        .service-badge-tag {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+        }
+        .badge-rating {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffffff;
+            color: #d97706;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .card-body { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
+        .h-name { font-size: 16.5px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+        .h-loc { font-size: 13px; color: #64748b; margin-bottom: 12px; }
+        .price-starting {
+            margin-top: auto;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .price-starting strong { font-size: 18px; color: var(--primary); }
+        .btn-card {
+            background: #f0f9ff;
+            color: var(--primary);
+            border: 1px solid #bae6fd;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+        .btn-card:hover { background: var(--primary); color: white; }
+
+        /* SECTION 3: TRUST METRICS */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .feature-box {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        .feature-box i { font-size: 30px; color: var(--primary); margin-bottom: 12px; }
+        .feature-box h4 { font-size: 16px; color: var(--dark); margin-bottom: 6px; }
+        .feature-box p { font-size: 13px; color: #64748b; line-height: 1.4; margin: 0; }
+
+        /* FOOTER */
+        .footer-main {
+            background: #090e17;
+            color: #94a3b8;
+            padding: 60px 20px 25px;
+            font-size: 14px;
+            border-top: 4px solid var(--primary);
+            margin-top: 70px;
+        }
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+            gap: 40px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 40px;
+        }
+        .footer-col h4 {
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-col p { line-height: 1.6; margin: 0 0 15px; font-size: 13.5px; }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: #38bdf8; }
+        .footer-contact-item { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+        .footer-contact-item i { color: #38bdf8; margin-top: 4px; font-size: 16px; }
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 25px auto 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12.5px;
+            color: #64748b;
+            flex-wrap: wrap;
+            gap: 10px;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareCompare - Find, Compare & Book Healthcare Services</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .card-img-wrap img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Help Bar -->
+    <div class="top-help-bar">
+        <div>
+            <span><i class="fa-solid fa-headset"></i> 24x7 Help Desk: <a href="mailto:support@carecompare.in">support@carecompare.in</a></span>
+            <span style="margin-left: 15px;"><i class="fa-solid fa-phone"></i> +91 (0651) 254-1533</span>
+        </div>
+        <div>
+            <span>Transparency in Medical Pricing | Verified Diagnostic Labs in Ranchi</span>
+        </div>
+    </div>
+
+    <!-- Main Navbar -->
+    <nav class="main-navbar">
+        <a href="/" class="brand-logo">
+            <i class="fa-solid fa-hospital-user"></i>
+            <span>CareCompare</span>
+        </a>
+        <ul class="nav-menu">
+            <li><a href="/" class="active">Home</a></li>
+            <li><a href="/search?service=X-Ray">Services</a></li>
+            <li><a href="/nearby">Hospitals</a></li>
+            <li><a href="#facilities">Facilities</a></li>
+
+            {% if session.get('user_name') %}
+                <li style="display: flex; align-items: center; gap: 14px;">
+                    <a href="/my-bookings" style="color: #0284c7; font-weight: 700; font-size: 13.5px;"><i class="fa-solid fa-receipt"></i> My Bookings</a>
+                    <span style="font-weight: 700; color: #0f172a; font-size: 14px;">
+                        <i class="fa-solid fa-circle-user" style="color: #0284c7;"></i> {{ session.get('user_name') }}
+                    </span>
+                    <a href="/logout" style="color: #ef4444; font-size: 13px; font-weight: 600;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                </li>
+            {% else %}
+                <li><a href="/login" class="nav-btn-login"><i class="fa-solid fa-user"></i> User Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Hero Search Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">Transparent Healthcare Pricing Near You</h1>
+        <p class="hero-subtitle">Compare lab tests, digital scans, and hospital rates across verified medical centers in Ranchi</p>
+
+        <form action="/search" method="GET" class="dual-search-bar">
+            <div class="search-field">
+                <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8;"></i>
+                <input type="text" name="service" placeholder="Search test (e.g. X-Ray, Blood Test, MRI)..." required>
+            </div>
+            <div class="search-field">
+                <i class="fa-solid fa-location-dot" style="color:#94a3b8;"></i>
+                <input type="text" name="location" value="Ranchi, Jharkhand" placeholder="e.g. Bariatu, Lalpur, Booty More">
+            </div>
+            <button type="button" onclick="getLocation()" class="btn-location-detect">
+                <i class="fa-solid fa-crosshairs"></i> Near Me
+            </button>
+            <button type="submit" class="btn-search-main">
+                <i class="fa-solid fa-search"></i> Search Rates
+            </button>
+        </form>
+
+        <div class="popular-tags">
+            <span style="font-size: 13px; font-weight: 700; color: #ffffff;">Popular Diagnostics:</span>
+            <a href="/search?service=X-Ray" class="tag-pill">🩻 X-Ray</a>
+            <a href="/search?service=Blood Test" class="tag-pill">🩸 Blood Test (CBC)</a>
+            <a href="/search?service=MRI" class="tag-pill">🧠 MRI Scan</a>
+            <a href="/search?service=CT Scan" class="tag-pill">🫁 CT Scan</a>
+            <a href="/search?service=Health Checkup" class="tag-pill">🏥 Full Body Checkup</a>
+        </div>
+    </section>
+
+    <!-- SECTION 1: FACILITIES & MEDICAL SERVICES -->
+    <section class="section-container" id="facilities">
+        <div class="section-heading">
+            <h2>1. Hospital Facilities & Medical Services</h2>
+            <p>Explore verified advanced diagnostic facilities, emergency care, and specialty setups</p>
+        </div>
+
+        <div class="video-explainer-card">
+            <div class="video-thumbnail-wrap">
+                <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=900&auto=format&fit=crop&q=80" alt="Hospital Facilities & Emergency Infrastructure">
+            </div>
+            <div class="video-info-content">
+                <span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; width: fit-content; margin-bottom: 10px;">Available Infrastructure</span>
+                <h3>Advanced Healthcare & Diagnostic Facilities</h3>
+                <p style="font-size: 13.5px; color: #64748b; margin: 0 0 15px;">Hamare registered hospitals aur labs me modern medical technology aur verified emergency care uplabdh hai:</p>
+                
+                <ul class="info-step-list">
+                    <li class="info-step-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span><strong>24x7 Emergency & Critical Care:</strong> Round-the-clock ICU, trauma care aur emergency response.</span>
+                    </li>
+                    <li class="info-step-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span><strong>Digital Imaging & Radiology:</strong> High-resolution Digital X-Ray, 3T MRI, aur Multi-slice CT Scans.</span>
+                    </li>
+                    <li class="info-step-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span><strong>NABL Certified Pathology Labs:</strong> Accurate blood tests, biochemistry, aur automated sample reports.</span>
+                    </li>
+                    <li class="info-step-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span><strong>In-House Pharmacy & Ambulance:</strong> 24 hours medicine store aur rapid GPS ambulance support.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: TOP HOSPITALS & CLINICAL CHECKUP LABS (DYNAMIC FROM DATABASE) -->
+    <section class="section-container">
+        <div class="section-heading" style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <h2>2. Top Rated Diagnostic Labs & Hospitals</h2>
+                <p>Verified staff, hygienic blood sample collection, digital X-Rays, and full checkups in Ranchi</p>
+            </div>
+            <a href="/search?service=Health Checkup" style="color: var(--primary, #0284c7); font-weight: 700; text-decoration: none; font-size: 14px;">View All Centres →</a>
+        </div>
+
+        <div class="hospital-grid">
+            {% for h in top_hospitals %}
+            <div class="hospital-card-pro">
+                <div class="card-img-wrap">
+                    <img src="{{ h.image_url or 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=600&auto=format&fit=crop&q=80' }}" alt="{{ h.hospital_name }}">
+                    <span class="badge-rating">★ {{ h.rating }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="h-name">{{ h.hospital_name }}</div>
+                    <div class="h-loc"><i class="fa-solid fa-location-dot"></i> {{ h.area }}, {{ h.city }}</div>
+                    <div class="price-starting">
+                        <div>
+                            <span style="font-size: 11px; color: #64748b;">Tests from</span><br>
+                            <strong>₹{{ h.starting_price or '80' }}</strong>
+                        </div>
+                        <span style="font-size: 11px; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Verified Rates</span>
+                    </div>
+                    <a href="/hospital/{{ h.hospital_id }}" class="btn-card">View Rates & Book</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- SECTION 3: TRUST METRICS -->
+    <section class="section-container">
+        <div class="section-heading">
+            <h2>3. Why Choose CareCompare?</h2>
+            <p>Built for patients to save money and find closest emergency care in Ranchi</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-box">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <h4>Transparent Pricing</h4>
+                <p>Compare actual test and scan costs before visiting the hospital.</p>
+            </div>
+            <div class="feature-box">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <h4>GPS Distance Sort</h4>
+                <p>Find the nearest open clinic and diagnostics center within 5 km.</p>
+            </div>
+            <div class="feature-box">
+                <i class="fa-solid fa-brain"></i>
+                <h4>AI Recommendation</h4>
+                <p>Automated score based on budget, distance, and patient ratings.</p>
+            </div>
+            <div class="feature-box">
+                <i class="fa-solid fa-phone"></i>
+                <h4>Direct Contact</h4>
+                <p>Call reception directly or get GPS navigation without middlemen.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-main">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4><i class="fa-solid fa-hospital-user" style="color: #38bdf8;"></i> CareCompare</h4>
+                <p>India's dedicated healthcare transparency platform enabling patients to discover, compare, and verify test prices across top hospitals and diagnostic centres.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Popular Diagnostics</h4>
+                <ul class="footer-links">
+                    <li><a href="/search?service=X-Ray">Digital X-Ray & Chest Scan</a></li>
+                    <li><a href="/search?service=MRI">1.5T & 3T MRI Scan</a></li>
+                    <li><a href="/search?service=CT Scan">CT Scan & Angiography</a></li>
+                    <li><a href="/search?service=Blood Test">Complete Blood Count (CBC)</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>For Patients & Centers</h4>
+                <ul class="footer-links">
+                    <li><a href="/nearby">Find Hospitals Near Me</a></li>
+                    <li><a href="/search?service=Health Checkup">Check All Packages</a></li>
+                    <li><a href="/login">User Portal</a></li>
+                    <li><a href="#facilities">Pricing Verification Methodology</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>24x7 Help Desk</h4>
+                <div class="footer-contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <div>
+                        <span style="color:#ffffff; font-weight:600; display:block;">Email Support</span>
+                        <a href="mailto:support@carecompare.in" style="color:#94a3b8; text-decoration:none;">support@carecompare.in</a>
+                    </div>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <div>
+                        <span style="color:#ffffff; font-weight:600; display:block;">Helpline Number</span>
+                        <span>+91 (0651) 254-1533</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; 2026 CareCompare Healthcare Technologies. All prices are indicative & verified with local providers in Ranchi.</span>
+        </div>
+    </footer>
+
+    <!-- Geolocation Script -->
+  <!-- Geolocation & Reverse Geocode Script -->
+    <script>
+    async function getLocation() {
+        const btn = document.querySelector('.btn-location-detect');
+        const locInput = document.querySelector('input[name="location"]');
+        
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Locating...';
+        }
+
+        if (!navigator.geolocation) {
+            alert("Aapka browser Geolocation support nahi karta.");
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-crosshairs"></i> Near Me';
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            async function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                // 1. Live Address reverse geocode karke input box me bharna
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    const data = await res.json();
+                    const locName = data.address.suburb || data.address.neighbourhood || data.address.city || data.address.state_district || "Ranchi";
+                    if (locInput) {
+                        locInput.value = `${locName}, Jharkhand`;
+                    }
+                } catch(e) {
+                    console.log("Reverse geocode failed", e);
+                }
+
+                // 2. Exact lat & lon ke sath nearby route open karna
+                setTimeout(() => {
+                    window.location.href = `/nearby?lat=${lat}&lon=${lon}`;
+                }, 800);
+            },
+            function(error) {
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-crosshairs"></i> Near Me';
+                alert("Location permission allow karein nearby hospitals dekhne ke liye.");
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    }
+    </script>
+</body>
+</html>

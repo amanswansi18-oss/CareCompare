@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hospital Finder - CareCompare</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .top-match { border-left: 5px solid #22c55e !important; }
+        .regular-match { border-left: 5px solid #0284c7 !important; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <h2><a href="/" style="color:white; text-decoration:none;">🏥 CareCompare</a></h2>
+    </header>
+
+    <div class="container" style="max-width: 750px;">
+        <div class="card" style="text-align: center; border-top: 4px solid #8b5cf6;">
+            <h2>🤖 AI Smart Hospital Recommendation</h2>
+            <p style="color: #64748b;">Service name aur apna budget enter karein, AI best matching hospitals rank karke dega.</p>
+
+            <form action="/ai-recommend" method="POST" style="margin-top: 20px;">
+                <input type="text" name="service" placeholder="Service (e.g. X-Ray, Blood Test, MRI)" required style="padding: 10px 14px; width: 70%; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px;"><br>
+                <input type="number" name="budget" placeholder="Max Budget in ₹ (e.g. 500)" style="padding: 10px 14px; width: 70%; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px;"><br>
+                <button type="submit" class="btn" style="background: #8b5cf6; padding: 10px 24px; font-size: 15px; border: none; cursor: pointer;">Get AI Suggestions</button>
+            </form>
+        </div>
+
+        {% if results %}
+        <h3 style="margin-top: 30px;">Top Recommended Hospitals:</h3>
+        <div class="hospital-grid" style="grid-template-columns: 1fr;">
+            {% for h in results %}
+            <div class="card {% if loop.first %}top-match{% else %}regular-match{% endif %}">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>{% if loop.first %}🥇 Top Recommendation: {% endif %}{{ h.hospital_name }}</h3>
+                    <span style="background: #ede9fe; color: #6d28d9; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 13px;">AI Score: {{ h.score }}</span>
+                </div>
+                <p>📍 {{ h.area }}, {{ h.city }} | ⭐ Rating: {{ h.rating }}/5.0 | 🚗 ~{{ h.distance }} km</p>
+                <div class="price-tag">
+                    <strong>{{ h.service_name }}:</strong> ₹{{ h.price_inr }} (Approx.)
+                </div>
+                <a href="/hospital/{{ h.hospital_id }}" class="btn">View Details</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% elif service %}
+        <p style="margin-top: 20px; color: #ef4444;">Aapke budget ya search ke anusaar koi hospital nahi mila.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

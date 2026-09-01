@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare Hospitals - CareCompare</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <h2><a href="/" style="color:white; text-decoration:none;">🏥 CareCompare</a></h2>
+    </header>
+
+    <div class="container">
+        <h2>⚖️ Hospital Price & Facility Comparison</h2>
+
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Feature / Service</th>
+                    {% for h in hospitals %}
+                        <th>{{ h.hospital_name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>⭐ Rating</strong></td>
+                    {% for h in hospitals %}
+                        <td>{{ h.rating }} / 5.0</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>🚑 24x7 Emergency</strong></td>
+                    {% for h in hospitals %}
+                        <td>{{ 'Yes' if h.emergency_24x7 == 1 else 'No' }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>🛏️ Total Beds</strong></td>
+                    {% for h in hospitals %}
+                        <td>{{ h.beds }}</td>
+                    {% endfor %}
+                </tr>
+                {% for s_name, price_map in services_matrix.items() %}
+                <tr>
+                    <td><strong>{{ s_name }}</strong></td>
+                    {% for h in hospitals %}
+                        <td>
+                            {% if h.hospital_id in price_map %}
+                                ₹{{ price_map[h.hospital_id] }}
+                            {% else %}
+                                <span style="color: #94a3b8;">N/A</span>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
