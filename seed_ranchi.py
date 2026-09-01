@@ -1,98 +1,133 @@
-
 import mysql.connector
 
-# Database Connection
+# Database Connection (TiDB Cloud)
 conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="aman123",  # <--- Apna MySQL password daalein
-    database="carecompare_db"
+    host="gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+    port=4000,
+    user="iK3LV5N6M2CshGx.root",
+    password="vwlacZZupZDrTZ9d",
+    database="test",
+    ssl_verify_cert=False
 )
 cursor = conn.cursor()
 
-# 1. Missing columns ko safely add karein agar nahi hain
-try:
-    cursor.execute("ALTER TABLE hospitals ADD COLUMN image_url VARCHAR(500);")
-except Exception:
-    pass
+# 1. Pehle saari tables banao agar nahi hain
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20),
+    password VARCHAR(255) NOT NULL,
+    city VARCHAR(50)
+);
+""")
 
-try:
-    cursor.execute("ALTER TABLE hospitals ADD COLUMN doctors_count INT DEFAULT 20;")
-except Exception:
-    pass
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS hospitals (
+    hospital_id INT AUTO_INCREMENT PRIMARY KEY,
+    hospital_name VARCHAR(150) NOT NULL,
+    address TEXT,
+    city VARCHAR(50),
+    latitude DOUBLE,
+    longitude DOUBLE,
+    contact_number VARCHAR(50),
+    rating FLOAT DEFAULT 4.0,
+    image_url TEXT,
+    doctors_count INT DEFAULT 10,
+    beds_count INT DEFAULT 50,
+    icu_beds_count INT DEFAULT 10,
+    emergency_available VARCHAR(10) DEFAULT 'Yes'
+);
+""")
 
-try:
-    cursor.execute("ALTER TABLE hospitals ADD COLUMN beds INT DEFAULT 100;")
-except Exception:
-    pass
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS services (
+    service_id INT AUTO_INCREMENT PRIMARY KEY,
+    hospital_id INT NOT NULL,
+    service_name VARCHAR(100) NOT NULL,
+    cost DECIMAL(10, 2) NOT NULL,
+    category VARCHAR(50),
+    FOREIGN KEY (hospital_id) REFERENCES hospitals(hospital_id) ON DELETE CASCADE
+);
+""")
 
-# 2. Foreign keys off karke purana data clean karein
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS bookings (
+    booking_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    hospital_id INT NOT NULL,
+    service_id INT,
+    patient_name VARCHAR(100),
+    patient_phone VARCHAR(20),
+    appointment_date VARCHAR(50),
+    status VARCHAR(20) DEFAULT 'Confirmed',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (hospital_id) REFERENCES hospitals(hospital_id) ON DELETE CASCADE
+);
+""")
+conn.commit()
+
+# 2. Safely Clear Existing Data
 cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
 cursor.execute("TRUNCATE TABLE services;")
 cursor.execute("TRUNCATE TABLE hospitals;")
 cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
-
-# 3. Ranchi Hospitals Insert (Bina 'address' column ke exact schema match)
-hospitals_data = [
-    (1, 'RIMS (Rajendra Institute of Medical Sciences)', 'Bariatu', 'Ranchi', 'Jharkhand', '834009', '06512541533', 4.5, 120, 1500, 'Govt Verified', 23.3882, 85.3575, 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=800&q=80'),
-    (2, 'Bhagwan Mahavir Medica Hospital', 'Bariatu', 'Ranchi', 'Jharkhand', '834009', '06516606000', 4.8, 65, 300, 'Verified', 23.3934, 85.3610, 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&q=80'),
-    (3, 'Medanta Hospital Ranchi', 'Booty More', 'Ranchi', 'Jharkhand', '835238', '06516607777', 4.7, 85, 450, 'Verified', 23.4475, 85.4520, 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&q=80'),
-    (4, 'Orchid Medical Centre', 'Lalpur', 'Ranchi', 'Jharkhand', '834001', '06516605000', 4.6, 50, 150, 'Verified', 23.3685, 85.3340, 'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=800&q=80'),
-    (5, 'Raj Hospital', 'Main Road', 'Ranchi', 'Jharkhand', '834001', '06512331763', 4.4, 40, 120, 'Verified', 23.3512, 85.3245, 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&q=80'),
-    (6, 'Sadar Hospital Ranchi', 'Purulia Road', 'Ranchi', 'Jharkhand', '834001', '06512330400', 4.3, 45, 200, 'Govt Verified', 23.3640, 85.3315, 'https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=800&q=80')
-]
-
-cursor.executemany('''
-    INSERT INTO hospitals (hospital_id, hospital_name, area, city, state, pincode, phone, rating, doctors_count, beds, verification_status, latitude, longitude, image_url)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-''', hospitals_data)
-
-# 4. Ranchi Diagnostic Rates Insert
-services_data = [
-    # RIMS
-    (1, 'X-Ray', 1, 100.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (1, 'Blood Test', 1, 80.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (1, 'CT Scan', 1, 1200.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (1, 'MRI Scan', 1, 2500.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (1, 'Health Checkup', 1, 499.0, 'Package', '01-Sep-2026', 'Verified'),
-    # Medica
-    (2, 'X-Ray', 1, 450.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (2, 'Blood Test', 1, 350.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (2, 'CT Scan', 1, 3200.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (2, 'MRI Scan', 1, 6500.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (2, 'Health Checkup', 1, 1499.0, 'Package', '01-Sep-2026', 'Verified'),
-    # Medanta
-    (3, 'X-Ray', 1, 500.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (3, 'Blood Test', 1, 400.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (3, 'CT Scan', 1, 3500.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (3, 'MRI Scan', 1, 7000.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (3, 'Health Checkup', 1, 1999.0, 'Package', '01-Sep-2026', 'Verified'),
-    # Orchid
-    (4, 'X-Ray', 1, 350.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (4, 'Blood Test', 1, 250.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (4, 'CT Scan', 1, 2800.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (4, 'MRI Scan', 1, 5500.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (4, 'Health Checkup', 1, 999.0, 'Package', '01-Sep-2026', 'Verified'),
-    # Raj Hospital
-    (5, 'X-Ray', 1, 300.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (5, 'Blood Test', 1, 200.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (5, 'CT Scan', 1, 2600.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (5, 'MRI Scan', 1, 5000.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (5, 'Health Checkup', 1, 899.0, 'Package', '01-Sep-2026', 'Verified'),
-    # Sadar Hospital
-    (6, 'X-Ray', 1, 150.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (6, 'Blood Test', 1, 100.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (6, 'CT Scan', 1, 1500.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (6, 'MRI Scan', 1, 3000.0, 'Fixed', '01-Sep-2026', 'Verified'),
-    (6, 'Health Checkup', 1, 599.0, 'Package', '01-Sep-2026', 'Verified')
-]
-
-cursor.executemany('''
-    INSERT INTO services (hospital_id, service_name, available, price_inr, price_type, last_updated, verification_status)
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
-''', services_data)
-
 conn.commit()
+
+# 3. Ranchi Hospitals Data Insert
+hospitals_data = [
+    ("Rajendra Institute of Medical Sciences (RIMS)", "Bariatu, Ranchi, Jharkhand 834009", "Ranchi", 23.3888, 85.3587, "+91 651 2541533", 4.3, "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=600&q=80", 120, 1500, 120, "Yes"),
+    ("Medanta Hospital Ranchi", "P.O. Irba, NH 33, Ranchi, Jharkhand 835217", "Ranchi", 23.4754, 85.4526, "+91 651 7123100", 4.6, "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80", 65, 450, 60, "Yes"),
+    ("Paras HEC Hospital", "Dhurwa, Sector 2, Ranchi, Jharkhand 834004", "Ranchi", 23.3102, 85.2981, "+91 651 7100100", 4.5, "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=600&q=80", 50, 300, 45, "Yes"),
+    ("Bhagwan Mahavir Medica Superspecialty", "Bariatu Road, Ranchi, Jharkhand 834009", "Ranchi", 23.3912, 85.3615, "+91 651 6606000", 4.4, "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80", 55, 300, 50, "Yes"),
+    ("Sadar Hospital Ranchi", "Purulia Road, Ranchi, Jharkhand 834001", "Ranchi", 23.3694, 85.3342, "+91 651 2212345", 4.1, "https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80", 40, 500, 30, "Yes"),
+    ("Orchid Medical Centre", "HB Road, Lalpur, Ranchi, Jharkhand 834001", "Ranchi", 23.3658, 85.3412, "+91 651 7100000", 4.3, "https://images.unsplash.com/photo-1512678080530-7760d81faba6?auto=format&fit=crop&w=600&q=80", 35, 150, 25, "Yes")
+]
+
+h_query = """
+INSERT INTO hospitals (hospital_name, address, city, latitude, longitude, contact_number, rating, image_url, doctors_count, beds_count, icu_beds_count, emergency_available)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+"""
+cursor.executemany(h_query, hospitals_data)
+conn.commit()
+
+# Hospital IDs map karein
+cursor.execute("SELECT hospital_id, hospital_name FROM hospitals")
+hosp_rows = cursor.fetchall()
+hosp_map = {row[1]: row[0] for row in hosp_rows}
+
+# 4. Services Data Insert
+services_data = [
+    (hosp_map["Rajendra Institute of Medical Sciences (RIMS)"], "General OPD Consultation", 50.00, "Consultation"),
+    (hosp_map["Rajendra Institute of Medical Sciences (RIMS)"], "ICU Charges (Per Day)", 1200.00, "Inpatient"),
+    (hosp_map["Rajendra Institute of Medical Sciences (RIMS)"], "MRI Brain Scan", 2500.00, "Diagnostic"),
+    (hosp_map["Rajendra Institute of Medical Sciences (RIMS)"], "CT Scan Whole Abdomen", 1800.00, "Diagnostic"),
+    
+    (hosp_map["Medanta Hospital Ranchi"], "General OPD Consultation", 800.00, "Consultation"),
+    (hosp_map["Medanta Hospital Ranchi"], "ICU Charges (Per Day)", 7500.00, "Inpatient"),
+    (hosp_map["Medanta Hospital Ranchi"], "MRI Brain Scan", 7000.00, "Diagnostic"),
+    (hosp_map["Medanta Hospital Ranchi"], "CT Scan Whole Abdomen", 5500.00, "Diagnostic"),
+
+    (hosp_map["Paras HEC Hospital"], "General OPD Consultation", 600.00, "Consultation"),
+    (hosp_map["Paras HEC Hospital"], "ICU Charges (Per Day)", 5500.00, "Inpatient"),
+    (hosp_map["Paras HEC Hospital"], "MRI Brain Scan", 6000.00, "Diagnostic"),
+
+    (hosp_map["Bhagwan Mahavir Medica Superspecialty"], "General OPD Consultation", 700.00, "Consultation"),
+    (hosp_map["Bhagwan Mahavir Medica Superspecialty"], "ICU Charges (Per Day)", 6000.00, "Inpatient"),
+
+    (hosp_map["Sadar Hospital Ranchi"], "General OPD Consultation", 20.00, "Consultation"),
+    (hosp_map["Sadar Hospital Ranchi"], "ICU Charges (Per Day)", 800.00, "Inpatient"),
+
+    (hosp_map["Orchid Medical Centre"], "General OPD Consultation", 650.00, "Consultation"),
+    (hosp_map["Orchid Medical Centre"], "ICU Charges (Per Day)", 5000.00, "Inpatient")
+]
+
+s_query = "INSERT INTO services (hospital_id, service_name, cost, category) VALUES (%s, %s, %s, %s)"
+cursor.executemany(s_query, services_data)
+conn.commit()
+
+print("Tables Created & Ranchi Hospitals Data Successfully Inserted into TiDB!")
 cursor.close()
 conn.close()
-print("SUCCESS: Ranchi Hospitals aur Services Database mein successfully load ho gaye!")

@@ -8,12 +8,13 @@ app.secret_key = 'carecompare_secret_key_2026'
 
 # Database Configuration
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'aman123',  # <--- Apna MySQL password yahan daalein
-    'database': 'carecompare_db'
+    'host': os.environ.get('DB_HOST', 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'),
+    'port': int(os.environ.get('DB_PORT', 4000)),
+    'user': os.environ.get('DB_USER', 'iK3LV5N6M2CshGx.root'),
+    'password': os.environ.get('DB_PASSWORD', 'vwlacZZupZDrTZ9d'),
+    'database': os.environ.get('DB_NAME', 'test'),
+    'ssl_verify_cert': False
 }
-
 def get_db_connection():
     return mysql.connector.connect(**DB_CONFIG)
 
