@@ -7,6 +7,67 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+
+/* Mobile Screen Overflow & Layout Fix */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    /* Top bar ko hide ya compact karein */
+    .top-bar, .header-contact, .help-desk-bar {
+        display: none !important;
+    }
+
+    /* Navbar items ko stack karein */
+    nav, .navbar, .nav-container {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        padding: 10px 15px !important;
+        width: 100% !important;
+    }
+
+    /* Nav links ko phone par space dein */
+    .nav-links, nav ul {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        font-size: 13px !important;
+        padding: 5px 0 !important;
+    }
+
+    /* Hero section text aur search box ko screen width me fit karein */
+    .hero-content, .search-container, .hero-section {
+        width: 95% !important;
+        padding: 10px !important;
+        margin: 0 auto !important;
+    }
+
+    .search-box, .search-bar {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 8px !important;
+    }
+
+    /* Popular tags wrap karein taaki screen se bahar na jayein */
+    .popular-tags, .diagnostics-tags {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        justify-content: center !important;
+    }
+}
+
+
         :root {
             --primary: #0284c7;
             --primary-dark: #0369a1;
